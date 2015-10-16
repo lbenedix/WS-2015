@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+
+
+  <body>
+    <canvas id="myCanvas" width="578" height="200"></canvas>
+
+    <script>
+
+		// get the context
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+ 		var frameCount = 0;
+
+
+		var draw = function() {
+
+			// calculate x-position for 2nd rectangle
+			var x = 100*Math.sin (frameCount*0.02);
+
+			// clear complete canvas
+			context.clearRect (0, 0, canvas.width, canvas.height);
+       
+	   		// draw fixed position rectangle
+      		context.fillStyle   = "rgba(200,50,50,1)";
+      		context.strokeStyle = "rgba(20,0,120,0.6)";
+      		context.fillRect(50, 50, 100, 100);
+
+			// draw moving rectangle
+      		context.fillStyle   = "rgba(40,50,50,1)";
+      		context.strokeStyle = "rgba(20,0,120,0.6)";
+			context.fillRect(100+x, 50, 50, 50);
+
+			// count the frame and loop the animation
+        	frameCount = frameCount+1;
+        	requestAnimationFrame(draw);
+      	};
+
+		// start the loop
+      	draw();
+
+
+    </script>
+
+  </body>
+
+</html>      
