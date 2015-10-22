@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+
+    // VARIABLES
+    var canvas;
+    var context;
+    var frameCount;
+    var N = 10;
+
+    // classes
+    var color = {};
+    color.r = 0;
+    color.g = 100;
+    color.b = 100;
+
+    var offset = {};
+    offset.x = 0;
+    offset.y = 0;
+
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+    }
+
+
+
+    var draw = function() {
+
+      context.clearRect (0, 0, canvas.width, canvas.height);  
+      context.fillStyle   = "rgba("+color.r+","+color.g+","+color.b+",1)";
+
+
+      for (i=0; i<N; i++) { 
+        for (j=0; j<N; j++) {
+          context.save();
+          context.translate(i*70+100,j*70+100+Math.sin(frameCount*0.1)*59);
+          context.rotate(frameCount*0.1 + i);
+          context.translate(-25,-25);
+          context.fillRect (0,0,50,50);
+          context.restore();
+        }
+      }
+
+          frameCount = frameCount+1;
+
+          requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="800" height="600"></canvas>
+    
+
+
+    <script>
+      init();
+      draw();		
+    </script>
+
+  </body>
+
+</html>      

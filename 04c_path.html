@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+    var trigger0 = function() {
+
+    }
+
+    var trigger1 = function() {
+
+    }
+
+
+    var calcAngle = function (v0, v1) {
+      a = Math.atan2(v1.y, v1.x) - Math.atan2(v0.y, v0.x);
+      if (a < 0) a += Math.PI*2;
+      return a;
+    }
+
+
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+    }
+
+
+    var center = {};
+    center.x = 200;
+    center.y = 200;
+
+    var draw = function() {
+
+      context.clearRect (0, 0, canvas.width, canvas.height);  
+      context.strokeStyle   = "rgba(100,100,0,1)";
+
+      N = 40;
+
+  
+      phi = frameCount*0.1;
+      r = 10;
+      context.beginPath();
+
+      center.x = Math.sin(frameCount*0.03)*200+300;
+      center.y = Math.sin(frameCount*0.03+Math.PI/2)*200+300;
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+
+          phi = center.x;
+          pos = {};
+          pos.x = i*20;
+          pos.y = j*20;
+
+          var v0 = {};
+          v0.x = 0;
+          v0.y= 1;
+          var v = {};
+          v.x = pos.x - center.x;
+          v.y = pos.y - center.y;
+          phi = calcAngle (v, v0);
+
+          context.moveTo (pos.x + r*Math.cos(phi), pos.y+r*Math.sin(phi));
+          context.lineTo (pos.x - r*Math.cos(phi), pos.y-r*Math.sin(phi));           
+        }
+      }
+      context.closePath();
+      context.stroke();
+
+      context.fillRect(center.x, center.y, 10, 10);
+      frameCount = frameCount+1;
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="800" height="600"></canvas>
+
+
+    <button onclick="trigger0();">mode0</button>
+    <button onclick="trigger1();">mode1</button> 
+  
+    <script>
+      init();
+      draw();		
+    </script>
+
+  </body>
+
+</html>      

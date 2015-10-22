@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+
+    // VARIABLES
+    var canvas;
+    var context;
+    var frameCount;
+    var N = 10;
+
+    // classes
+    var color = {};
+    color.r = 0;
+    color.g = 100;
+    color.b = 100;
+
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+    }
+
+    // ui functions
+    var activate0 = function() {
+      N = 10;
+      color.r = 0;
+      color.g = 100;
+      color.b = 100;
+    }
+    
+    var activate1 = function() {
+      N = 20;
+      color.r = 200;
+      color.g = 200;
+      color.b = 100;
+    }
+
+    var draw = function() {
+
+      // clear complete canvas
+      context.clearRect (0, 0, canvas.width, canvas.height);  
+
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+          // draw moving rectangle
+          context.fillStyle   = "rgba("+color.r+","+color.g+","+color.b+",1)";
+          context.strokeStyle = "rgba(20,0,120,0.6)";
+          d = 600 / N;
+          context.fillRect (i*d, j*d, 15, 15);
+        }
+      }
+
+      frameCount = frameCount+1;
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <button onclick="activate0();">mode0</button>
+    <button onclick="activate1();">mode1</button> 
+
+    <canvas id="myCanvas" width="800" height="600"></canvas>
+
+    <script>
+      init();
+      draw();		
+    </script>
+
+  </body>
+
+</html>      

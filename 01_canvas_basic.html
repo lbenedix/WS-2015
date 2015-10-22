@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+    // VARIABLES
+    var canvas;
+    var context;
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+    }
+
+
+    var setColor = function (R,G,B) {
+      context.fillStyle = "rgba("+R+","+G+","+B+",1)";
+    }
+    var draw = function () {
+
+      context.clearRect (0, 0, canvas.width, canvas.height);  
+        
+      for (i=0; i<200; i++) {
+        for (j=0; j<200; j++) {
+          context.save();
+          
+          // translate to linear grid pos
+          context.translate (0+i*12, 0+j*12);
+          
+          // rotate, linear dependent on x
+          context.rotate(Math.PI*2*i/200);
+          context.translate(-5,-5);
+
+          // color dependent on x & y
+          setColor(i*4,100,j*10);
+          
+          // generate sine wave with amplite -1 ... 1 and 4 periods over range j
+          size = Math.sin(2*Math.PI*j/10);
+
+          // shift amplitude to 3...9
+          size = size*3+6;
+
+
+          context.fillRect(0,0,size,size);
+          context.restore();
+        }
+      }
+/*
+      setColor(100,100,255);
+      context.fillRect(500,0,100,100);
+*/
+    }
+
+    </script>
+  </head>
+
+  <body>
+    <canvas id="myCanvas" width="1800" height="600"></canvas>
+    <script>
+      init();
+      draw();	
+    </script>
+
+  </body>
+</html>      

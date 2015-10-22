@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+    var trigger0 = function() {
+
+    }
+
+    var trigger1 = function() {
+
+    }
+
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+    }
+
+
+    var center = {};
+    center.x = 200;
+    center.y = 200;
+
+    var draw = function() {
+
+    context.beginPath();
+
+
+      context.clearRect (0, 0, canvas.width, canvas.height);       
+      var N = 40;
+      for (i=0; i<N; i++) {
+          context.moveTo(Math.random()*200, Math.random()*400);
+          context.lineTo(Math.random()*200, Math.random()*400);
+      }
+
+      context.closePath();  
+      context.strokeStyle = "rgba(255,0,255,1)";  
+      context.stroke();  
+/*
+      context.clearRect (0, 0, canvas.width, canvas.height);  
+      context.strokeStyle   = "rgba(100,100,0,1)";
+
+      N = 40;
+
+  
+      phi = frameCount*0.1;
+      r = 10;
+      context.beginPath();
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+
+
+          phi = i*0.2 + frameCount*0.1;
+
+          x = i*20 + r*Math.cos(phi);
+          y = j*20 + r*Math.sin(phi);
+          context.moveTo(x,y);
+          x = i*20 - r*Math.cos(phi);
+          y = j*20 - r*Math.sin(phi);
+          context.lineTo(x,y);
+        }
+      }
+      context.closePath();
+      context.stroke();
+*/
+
+      frameCount = frameCount+1;
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="800" height="600"></canvas>
+
+
+    <button onclick="trigger0();">mode0</button>
+    <button onclick="trigger1();">mode1</button> 
+  
+    <script>
+      init();
+      draw();		
+    </script>
+
+  </body>
+
+</html>      
