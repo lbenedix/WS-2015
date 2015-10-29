@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+    var N = 140;
+
+    
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+    }
+
+
+    var draw = function() {
+
+      context.clearRect (0, 0, canvas.width, canvas.height);  
+      
+      
+      context.beginPath();
+
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+
+          pos = {};
+          pos.x = 0 + i*10;
+          pos.y = 0 + j*10;
+          angle = 0; //frameCount*0.1;
+          
+
+          R = 1000 / (pos.x*pos.x);
+
+
+          context.strokeStyle = "#ff0000";
+         
+          context.save();
+
+          context.translate (pos.x, pos.y);
+          
+          context.rotate(angle);
+          context.translate(-R/2,0);
+          context.moveTo(0,0);
+          context.lineTo(R,0);
+          
+          context.restore();
+        }
+      }
+      
+      context.closePath();
+      context.stroke();
+
+      frameCount = frameCount+1;
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="800" height="800"></canvas>
+
+    <script>
+      init();
+      draw();   
+    </script>
+
+  </body>
+
+</html>      

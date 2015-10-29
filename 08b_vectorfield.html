@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+    var data = [];
+    var N = 40;
+    
+    var quantize = function (val, steps) {
+      return Math.round(val*steps) / steps;
+    }
+
+    var initData = function() {
+      for (i=0; i<N; i++) {
+        data[i] = [];
+        for (j=0; j<N; j++) {
+          data[i][j] = Math.random();
+          //data[i][j] = quantize(Math.random(), 6);
+        }
+      }
+    }
+
+
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+
+      initData();
+    }
+
+
+    var center = {};
+    center.x = 200;
+    center.y = 200;
+    
+    var fillBrightness = function (b) {
+      b = Math.round(b*255);
+      context.fillStyle = "rgba("+b+","+b+","+b+",1.0)";
+    }
+
+    var draw = function() {
+
+      context.clearRect (0, 0, canvas.width, canvas.height);    
+      s = 15;
+
+      context.beginPath();
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+
+          context.strokeStyle = "#ff0000";
+          context.save();
+          context.translate(i*s+s/2, j*s+s/2);
+          context.rotate(data[i][j]*2*Math.PI);
+          context.translate(-s/2,0);
+          context.moveTo(0,0);
+          context.lineTo(s,0);
+          context.restore();
+        }
+      }
+      
+      context.closePath();
+      context.stroke();
+      //initData();
+      frameCount = frameCount+1;
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="800" height="800"></canvas>
+
+    <script>
+      init();
+      draw();		
+    </script>
+
+  </body>
+
+</html>      

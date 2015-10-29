@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+    var arr = [];
+    var arr_len = 5000;
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+
+      for (i=0; i<arr_len; i++) {
+        arr[i] = Math.random();
+      }
+    }
+
+
+    
+    var start = 0;
+
+    var getFromArray = function (start, end, i) {
+      start = start % arr_len;
+      end = end % arr_len;
+
+      if (end>start) {
+        return arr[start+i];
+      }
+      else {
+
+      }
+    }
+
+    var pos = 0;
+
+    // clip absolute value to maximum
+    var clip = function (val, max) {
+        if (Math.abs(val)>max) return Math.sign(val)*max;
+        else return val;
+    }
+
+    var clip2 = function (val, min, max) {
+        if (val>max) return max;
+        else if (val<min) return min;
+        else return val;
+    }
+
+    // quantize value to nsteps
+    var quantize = function (val, nsteps) {
+      return Math.round(val / nsteps) * nsteps;
+    }
+
+    // flip negative values to positive
+    var rectify = function (val) {
+      if (val<0) return -val;
+      else return val;
+    }
+
+    var draw = function() {
+
+      // clear the screen with alpha < 1.0
+      context.fillStyle = "rgba(255, 255, 255, 0.02)";
+      context.fillRect(0,0,canvas.width, canvas.height);
+
+
+      context.fillStyle = "rgba(0,0,100,1)";
+
+      context.save();
+
+      // calc y position in -100 ... 100
+      y = Math.sin(pos/600*Math.PI*2)*200;
+      y = clip2 (y, 0, 90);
+      //y = rectify(y);
+      //y = quantize(y, 20);
+      // clip y to 50
+
+
+      context.translate(pos,300-y);
+      context.fillRect(0,0,2,2);
+      
+
+      context.restore();
+
+      pos = (pos+2) % 600;
+
+      frameCount = frameCount+1;
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="1800" height="600"></canvas>
+
+    <script>
+      init();
+      draw();		
+    </script>
+
+  </body>
+
+</html>      

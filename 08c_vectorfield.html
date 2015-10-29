@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+    var N = 40;
+
+    var calcAngle = function (v0, v1) {
+      a = Math.atan2(v1.y, v1.x) - Math.atan2(v0.y, v0.x);
+      if (a < 0) a += Math.PI*2;
+      return a;
+    }
+
+    var calcLength = function (v0) {
+      return Math.sqrt(v0.x*v0.x + v0.y*v0.y);
+    }
+
+
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+    }
+
+
+
+    var draw = function() {
+
+      context.clearRect (0, 0, canvas.width, canvas.height);  
+      
+      s = 15;
+      var center = {};
+      center.x = 300 + 100*Math.sin(frameCount*0.04);
+      center.y = 300 + 100*Math.cos(frameCount*0.04);
+
+      context.beginPath();
+
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+
+
+          var pos = {};
+          pos.x = i*s+s/2;
+          pos.y = j*s+s/2;
+
+          var dir = {};
+          dir.x = center.x - pos.x;
+          dir.y = center.y - pos.y;
+
+          len = calcLength(dir)+0.2;
+          R = 10000 / len / len;
+
+          var vX = {};
+          vX.x = 1;
+          vX.y = 0;
+
+          angle = calcAngle(vX, dir);
+
+          context.strokeStyle = "#ff0000";
+          context.save();
+          
+
+          context.translate (pos.x, pos.y);
+          
+          context.rotate(angle);
+          context.translate(-s/2,0);
+          context.moveTo(0,0);
+          context.lineTo(R,0);
+          
+          context.restore();
+        }
+      }
+      
+      context.closePath();
+      context.stroke();
+
+      frameCount = frameCount+1;
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="800" height="800"></canvas>
+
+    <script>
+      init();
+      draw();		
+    </script>
+
+  </body>
+
+</html>      

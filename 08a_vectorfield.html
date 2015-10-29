@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+    var N = 100;
+
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+    }
+
+
+    // length of vector
+    var calcLength = function (v0) {
+      return Math.sqrt(v0.x*v0.x + v0.y*v0.y);
+    }
+
+    // helper function to set gray color
+    var fillBrightness = function (b) {
+      b = Math.round(b*255);
+      context.fillStyle = "rgba("+b+","+b+","+b+",1.0)";
+    }
+
+
+    var draw = function() {
+
+      // the center moves on a circle around the point (50,50)
+      var center = {};
+      center.x = 50 + 30*Math.sin(frameCount*0.04);
+      center.y = 50 + 30*Math.cos(frameCount*0.04);
+      context.clearRect (0, 0, canvas.width, canvas.height);  
+      
+
+      // iterate over squares
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+          
+          var pos = {};
+          pos.x = i;
+          pos.y = j;
+
+          var dir = {};
+          dir.x = center.x - pos.x;
+          dir.y = center.y - pos.y;
+
+          len = calcLength(dir)+1;
+
+          var vX = {};
+          vX.x = 1;
+          vX.y = 0;
+
+
+          context.save();
+          fillBrightness(10.0/len);
+          S = 8;
+          context.translate(pos.x*S, pos.y*S);
+          context.fillRect(0,0,4*S,4*S);
+          context.restore();
+        }
+      }
+      
+      //initData();
+      frameCount = frameCount+1;
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="800" height="800"></canvas>
+
+    <script>
+      init();
+      draw();		
+    </script>
+
+  </body>
+
+</html>      
