@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <script>
+
+    var N_PARTICLES = 200;
+    var particles = [];
+      
+    var WIDTH = 800;
+    var HEIGHT = 800;
+
+    // force
+    var forceField = [];
+    var forceField1 = [];
+
+
+    // length of vector
+    var calcLength = function (v0) {
+      return Math.sqrt(v0.x*v0.x + v0.y*v0.y);
+    }
+
+    // helper function to set gray color
+    var fillBrightness = function (b) {
+      b = Math.round(b*255);
+      context.fillStyle = "rgba("+b+","+b+","+b+",1.0)";
+    }
+
+    var init = function() {
+
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      frameCount = 0;
+
+      var center = {x:100, y:100};
+
+      var centers = [{x:40, y:40}, 
+                     {x:140, y:40}, 
+                     {x:140, y:140}, 
+                     {x:40, y:140}];
+
+      for (i=0; i<WIDTH; i++) {
+
+        forceField[i] = [];
+        forceField1[i] = [];
+
+        for (j=0; j<HEIGHT; j++) {
+
+          forceField[i][j] = {x:0, y:0};
+
+          for (c=0; c<4; c++) {
+            dir = {x: centers[c].x-i, y:centers[c].y-j};
+            len = calcLength(dir)+1;
+            dir.x /= len; /// len * 50;
+            dir.y /= len; // / len * 50;
+
+            dir.x = dir.x * 40 / len / len;
+            dir.y = dir.y * 40 / len / len;
+            //forceField[i].push({x:dir.x, y:dir.y});
+            forceField[i][j].x -= dir.x; // + Math.random()*0.2;
+            forceField[i][j].y -= dir.y; // + Math.random()*0.2;
+            // = {x:dir.x, y:dir.y};
+          }
+          forceField1[i][j] = {x:0, y:1}
+        } 
+      }
+
+      // calculate random start position for each particle
+      for (i=0; i<N_PARTICLES; i++) {
+
+        particles[i] = [];
+        for (j=0; j<N_PARTICLES; j++) {
+
+          particles[i][j] = {};
+          particles[i][j].position = {};
+          particles[i][j].position.x = i; 
+          particles[i][j].position.y = j;
+
+          // random start veloctiy
+          particles[i][j].velocity = {};
+          particles[i][j].velocity.x = 0; //Math.random()*6-3;
+          particles[i][j].velocity.y = 0; //Math.random()*6-3; 
+        }
+      }
+    }
+
+
+
+
+    var draw = function() {
+
+      // the center moves on a circle around the point (50,50)
+      context.clearRect (0, 0, canvas.width, canvas.height); 
+
+      // iterate over squares
+      for (i=0; i<N_PARTICLES; i++) {
+        for (j=0; j<N_PARTICLES; j++) {
+        
+          var particle = particles[i][j];
+
+          // damping factor
+          var dampen = 0.2;
+
+          // update velocity with forces
+          x = Math.floor(particle.position.x);
+          y = Math.floor(particle.position.y);
+
+          particle.velocity.x += forceField[x][y].x;
+          particle.velocity.y += forceField[x][y].y;
+
+          particle.velocity.x += forceField1[x][y].x;
+          particle.velocity.y += forceField1[x][y].y;
+
+
+          // check constraints
+          var nextPosition = {};
+          nextPosition.x = particle.position.x + particle.velocity.x;
+          nextPosition.y = particle.position.y + particle.velocity.y;    
+          
+          // update velocity if outside box
+          if (nextPosition.x>800 || nextPosition.x<0) {
+            particle.velocity.x *= -1;
+          }
+
+          if (nextPosition.y>800 || nextPosition.y<0) {
+            //particle.velocity.x += (Math.random()*6-3);
+            particle.velocity.y *= -1;
+          }
+
+
+
+          // damp velocity
+          particle.velocity.x *= dampen;
+          particle.velocity.y *= dampen;
+
+
+
+          // update particle position
+          particle.position.x += particle.velocity.x;
+          particle.position.y += particle.velocity.y;
+          
+          context.save();
+          S = 2;
+          d = 5;
+          fillBrightness (0);
+          context.translate(particle.position.x*d, particle.position.y*d);
+          context.fillRect(0,0,S,S);
+          context.restore();
+
+        }
+      }
+      
+      //initData();
+      frameCount = frameCount+1;
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="800" height="800"></canvas>
+
+    <script>
+      init();
+      draw();		
+    </script>
+
+  </body>
+
+</html>      

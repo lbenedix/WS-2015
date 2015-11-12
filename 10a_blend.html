@@ -5,6 +5,7 @@
     <script>
 
     var data = [];
+    var data1 = [];
     var N = 40;
     
     var quantize = function (val, steps) {
@@ -15,12 +16,14 @@
       for (i=0; i<N; i++) {
         data[i] = [];
         for (j=0; j<N; j++) {
-          data[i][j] = {x:Math.random(), y:Math.random()};
-          //data[i][j] = quantize(Math.random(), 6);
+          data[i][j] = Math.random();
         }
       }
     }
 
+    var blend = function (v0, v1, t) {
+      return v0*(1-t) + v1*t;
+    }
 
     var init = function() {
       canvas = document.getElementById("myCanvas");
@@ -52,10 +55,24 @@
           context.strokeStyle = "#ff0000";
           context.save();
           context.translate(i*s+s/2, j*s+s/2);
-          context.rotate(data[i][j].y*2*Math.PI);
+
+          t = Math.sin(frameCount*0.03-i*0.1)*0.5+0.5;
+
+          len0 = 10;
+          len1 = data[i][j]*30;
+
+          angle2 = Math.sin(frameCount*0.01)*Math.PI + Math.PI;
+          
+          // blend angle between data and angle2
+          angle = blend (angle2, data[i][j]*Math.PI*2, t);
+
+          //blend length between len0 and len1
+          len = blend (len0, len1, t);
+
+          context.rotate(angle);
           context.translate(-s/2,0);
           context.moveTo(0,0);
-          context.lineTo(data[i][j].x*14,0);
+          context.lineTo(len,0);
           context.restore();
         }
       }

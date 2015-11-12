@@ -4,8 +4,15 @@
   <head>
     <script>
 
-    var N = 40;
+    var N = 90;
+    var vectorField = [];
 
+
+    var fillGray = function (theB) {
+      
+      var b = theB * 250;
+      context.fillStyle = "rgba("+b+","+b+","+b+",1.0)";
+    }
     var calcAngle = function (v0, v1) {
       a = Math.atan2(v1.y, v1.x) - Math.atan2(v0.y, v0.x);
       if (a < 0) a += Math.PI*2;
@@ -16,59 +23,155 @@
       return Math.sqrt(v0.x*v0.x + v0.y*v0.y);
     }
 
+    var blend = function (v0, v1, t) {
+      return v0*(1-t) + v1*t;
+    }
 
     var init = function() {
       canvas = document.getElementById("myCanvas");
       context = canvas.getContext('2d');
       frameCount = 0;
+
+      for (i=0; i<N; i++) {
+        vectorField[i] = [];
+      }
+
+      calcVectorField4();
     }
+
+
+
+    var calcVectorField = function() {
+
+      var center = {};
+      center.x = 300 + 100*Math.sin(frameCount*0.04);
+      center.y = 300 + 100*Math.cos(frameCount*0.04);
+
+      R = 2;
+      phi = 0;
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+          phi = i*0.1;
+          vectorField[i][j] = {x:R*Math.sin(phi),y:R*Math.cos(phi)};
+        }
+      }
+    }
+
+    var calcVectorField2 = function() {
+
+      var center = {};
+      center.x = 300 + 100*Math.sin(frameCount*0.04);
+      center.y = 300 + 100*Math.cos(frameCount*0.04);
+
+      R = 2;
+      phi = 0;
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+          phi = Math.random()*2*Math.PI;
+          vectorField[i][j] = {x:R*Math.sin(phi),y:R*Math.cos(phi)};
+        }
+      }
+    }
+
+    var calcVectorField3 = function() {
+
+      grid = [];
+      downsample = 10;
+      for (i=0; i<(N/downsample)+1; i++) {
+        grid[i] = [];
+        for (j=0; j<(N/downsample)+1; j++) {
+          grid[i][j] = Math.random();
+        }
+      }
+
+
+      R = 2;
+      phi = 0;
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+
+          i0 = Math.floor(i/downsample);
+          j0 = Math.floor(j/downsample);
+
+          phi = grid[i0][j0]*2*Math.PI;
+          vectorField[i][j] = {x:R*Math.sin(phi),y:R*Math.cos(phi)};
+        }
+      }
+    }
+
+    var calcVectorField4 = function() {
+
+      grid = [];
+      downsample = 20;
+      for (i=0; i<(N/downsample)+1; i++) {
+        grid[i] = [];
+        for (j=0; j<(N/downsample)+1; j++) {
+          grid[i][j] = Math.random();
+        }
+      }
+
+
+      R = 1;
+      phi = 0;
+      for (i=0; i<N; i++) {
+        for (j=0; j<N; j++) {
+
+          i0 = Math.floor(i/downsample);
+          j0 = Math.floor(j/downsample);
+
+          i1 = Math.floor(i/downsample)+1;
+          j1 = Math.floor(j/downsample)+1;
+
+          blend_x = (i%downsample) / downsample; //(i%downsample) / downsample;
+          blend_y = (j%downsample) / downsample; //(j%downsample) / downsample;
+
+          v_top0 = grid[i0][j0]; //Math.floor(i/downsample)*0.1; //blend (0, 0.35, blend_x); //grid[i0][j0], grid[i1][j0]);
+          v_top1 = grid[i1][j0]; //Math.floor((i/downsample)+1)*0.1; //blend (0, 0.35, blend_x); //grid[i0][j0], grid[i1][j0]);
+        
+          v_bottom0 = grid[i0][j1];
+          v_bottom1 = grid[i1][j1];
+
+          v_top    = blend (v_top0, v_top1, blend_x);
+          v_bottom = blend (v_bottom0, v_bottom1, blend_x);
+
+          //v_bottom = blend (blend_x, grid[i0][j1], grid[i1][j1]);
+          vectorField[i][j] = blend(v_top, v_bottom, blend_y); //v_top; //blend(blend_y, v_top, v_bottom);
+        }
+      }
+    }
+
+
 
 
 
     var draw = function() {
 
       context.clearRect (0, 0, canvas.width, canvas.height);  
+    
+      s = 10;
       
-      s = 15;
-      var center = {};
-      center.x = 300 + 100*Math.sin(frameCount*0.04);
-      center.y = 300 + 100*Math.cos(frameCount*0.04);
 
       context.beginPath();
+      context.strokeStyle = "#ff0000";
+      R = 5;
 
       for (i=0; i<N; i++) {
         for (j=0; j<N; j++) {
 
+          phi = vectorField[i][j];
+          dx = R*Math.cos(phi);
+          dy = R*Math.sin(phi);
 
-          var pos = {};
-          pos.x = i*s+s/2;
-          pos.y = j*s+s/2;
+          g = vectorField[i][j];
+          g = Math.floor(g*50)/50; 
+          fillGray(g);
+          context.fillRect(i*s,j*s,s,s);
+          /*
+          context.moveTo ((i-dx/2)*s,(j-dy/2)*s);
+          context.lineTo ((i+dx/2)*s, (j+dy/2)*s);
+          */
 
-          var dir = {};
-          dir.x = center.x - pos.x;
-          dir.y = center.y - pos.y;
 
-          len = calcLength(dir)+0.2;
-          R = 10000 / len / len;
-
-          var vX = {};
-          vX.x = 1;
-          vX.y = 0;
-
-          angle = calcAngle(vX, dir);
-
-          context.strokeStyle = "#ff0000";
-          context.save();
-          
-
-          context.translate (pos.x, pos.y);
-          
-          context.rotate(angle);
-          context.translate(-s/2,0);
-          context.moveTo(0,0);
-          context.lineTo(R,0);
-          
-          context.restore();
         }
       }
       
