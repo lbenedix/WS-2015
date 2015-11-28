@@ -1,0 +1,191 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      cursor: none;
+    }
+    </style>
+    <script>
+
+    var canvas;
+    var N_PARTICLES = 500; // has to be a square number (because of reasons!)
+    var dead_particles = 0;
+
+    var particles = [];
+      
+    // force
+    var forceField0 = [];
+    var forceField1 = [];
+
+    var mousePos = {x:0,y:0};
+
+
+    var rgba = function(r,g,b,a){return "rgba("+r+","+g+","+b+","+a+")";};
+    var rgb = function(r,g,b){return rgba(r,g,b,1.0);}
+
+    
+    var UpdateForce = function(){
+      // I have no idea, what this is about
+    }
+    
+    var UpdateVelocity = function(particle, force, dampen){
+        try{
+          particle.velocity.x += force.x;
+          particle.velocity.y += force.y;
+
+          // check constraints
+          var nextPosition = {};
+          nextPosition.x = particle.position.x + particle.velocity.x;
+          nextPosition.y = particle.position.y + particle.velocity.y;    
+          // update velocity if outside box
+          if (nextPosition.x>canvas.width-particle.size || nextPosition.x<0+particle.size) {
+            particle.velocity.x *= -1;
+          }
+          if (nextPosition.y>canvas.height-particle.size || nextPosition.y<0+particle.size) {
+            particle.velocity.y *= -1;
+          }
+
+          // push particles away from mouse pointer
+          var a = particle.position.x - mousePos.x
+          var b = particle.position.y - mousePos.y
+          var distance = Math.sqrt( a*a + b*b );
+          if(distance < Math.min(canvas.height, canvas.width)/4){
+            particle.velocity.x += 0.01*((particle.position.x - mousePos.x));
+            particle.velocity.y += 0.01*((particle.position.y - mousePos.y));
+          }
+
+          // damp velocity (minimal speed = 0.1)
+          if(Math.abs(particle.velocity.x) > 0.1){
+            particle.velocity.x *= dampen;
+          }
+          if(Math.abs(particle.velocity.y) > 0.1){
+            particle.velocity.y *= dampen;
+          }
+        }catch(e){}
+    }
+
+    var UpdatePosition = function(particle){
+          // update particle position
+          particle.position.x += particle.velocity.x;
+          particle.position.y += particle.velocity.y;
+    }
+
+    
+    var DrawParticle = function(context, particle){
+          context.save();
+          context.translate(particle.position.x, particle.position.y);
+          context.fillStyle = rgba(255,255,255,Math.sqrt(Math.pow(particle.velocity.x,2)+Math.pow(particle.velocity.y,2))/8);
+          context.fillRect(0,0,particle.size,particle.size);
+          context.restore();
+    }
+      
+    // Inspired by: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+    var mouseMoved = function(evt) {
+      mousePos = { x: evt.clientX - canvas.getBoundingClientRect().left,
+                   y: evt.clientY - canvas.getBoundingClientRect().top }
+    }
+
+    var init = function() {
+      canvas = document.getElementById("myCanvas");
+      context = canvas.getContext('2d');
+      canvas.width = window.innerWidth-10;
+      canvas.height = window.innerHeight-10;
+
+      canvas.addEventListener('mousemove', mouseMoved, false);
+      mousePos = {x:canvas.width/2,y: canvas.height/2}
+
+      frameCount = 0;
+
+      for (x=0; x<canvas.width; x++) {
+        forceField0[x] = [];
+        for (y=0; y<canvas.height; y++) {
+          forceField0[x][y] = {x:0, y:0};
+        } 
+      }
+
+      // calculate random start position for each particle
+      for (i=0; i<N_PARTICLES; i++) {
+
+          particles[i] = {};
+          particles[i].position = {};
+          particles[i].position.x = Math.floor(Math.random()*canvas.width);
+          particles[i].position.y = Math.floor(Math.random()*canvas.height);
+
+          // random start veloctiy
+          var v = 1;
+          particles[i].velocity = {};
+          particles[i].velocity.x = Math.random()*v-v/2;
+          particles[i].velocity.y = Math.random()*v-v/2;
+          particles[i].a = 0.5;
+          particles[i].size = Math.floor(Math.random()*20+1); 
+
+      }
+      context.fillStyle = "black";
+      context.fillRect (0, 0, canvas.width, canvas.height); 
+    }
+
+
+
+
+    var draw = function() {
+      // reset 
+      context.fillStyle = "black";
+      context.fillRect (0, 0, canvas.width, canvas.height); 
+
+      // Draw Mousecursor
+      // context.beginPath();
+      // context.arc(mousePos.x, mousePos.y, 20, 0, 2 * Math.PI, false);
+      // context.fillStyle = 'black';
+      // context.fill();
+      // context.lineWidth = 5;
+      // context.strokeStyle = '#e70036';
+      // context.stroke();
+      context.save();
+      context.translate(mousePos.x-25, mousePos.y-25);
+      context.fillStyle = '#e70036';
+      context.fillRect(0,0,50,50);
+      context.restore();
+
+
+
+      frameCount = frameCount+1;
+
+      // iterate over squares
+      for (i=0; i<particles.length; i++) {
+        
+          var particle = particles[i];
+
+          // damping factor
+          var dampen = 0.99;
+          try{
+            UpdateVelocity(particle, forceField0[Math.floor(particle.position.x)][Math.floor(particle.position.y)], dampen);
+            UpdatePosition(particle);
+            DrawParticle(context, particle);
+          }catch(e){}
+
+      }
+
+      requestAnimationFrame(draw);
+    };
+
+    </script>
+  </head>
+
+  <body>
+
+
+    <canvas id="myCanvas" width="1900" height="800" style=""></canvas>
+
+    <script>
+      init();
+      draw();   
+    </script>
+
+  </body>
+
+</html>      
