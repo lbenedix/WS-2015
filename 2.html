@@ -2,9 +2,15 @@
 <html>
 
   <head>
+    <style type="text/css">
+      * {
+        background-color: black;
+      }
+    </style>
+
     <script>
 
-    var N_PARTICLES = 100; // has to be a square number (because of reasons!)
+    var N_PARTICLES = 64; // has to be a square number (because of reasons!)
     var dead_particles = 0;
 
     var particles = [];
@@ -32,22 +38,6 @@
           var nextPosition = {};
           nextPosition.x = particle.position.x + particle.velocity.x;
           nextPosition.y = particle.position.y + particle.velocity.y;    
-          // update velocity if outside box
-          if (nextPosition.x>800-particle.size || nextPosition.x<0+particle.size) {
-            if(Math.abs(particle.velocity.x) < 2){
-              particle.velocity.x = 0;
-            }else{
-              particle.velocity.x *= -1;
-            }
-          }
-
-          if (nextPosition.y>800-particle.size || nextPosition.y<0+particle.size) {
-            if(Math.abs(particle.velocity.y) < 2){
-              particle.velocity.y = 0;
-            }else{
-              particle.velocity.y *= -1;
-            }
-          }
 
           // damp velocity
           particle.velocity.x *= dampen;
@@ -64,7 +54,8 @@
     var DrawParticle = function(context, particle){
           context.save();
           context.translate(particle.position.x, particle.position.y);
-          context.fillStyle = particle.c;
+          context.rotate(Math.PI*particle.lifetime/50);
+          context.fillStyle = rgba(particle.r,particle.g,particle.b, particle.lifetime/50);
           context.fillRect(0,0,particle.size,particle.size);
           context.restore();
     }
@@ -85,6 +76,9 @@
     var init = function() {
       canvas = document.getElementById("myCanvas");
       context = canvas.getContext('2d');
+      context.fillStyle = "black";
+      context.fillRect (0, 0, canvas.width, canvas.height); 
+
       frameCount = 0;
       dead_particles = 0;
 
@@ -114,8 +108,12 @@
           particles[i][j].velocity.x = Math.random()*20-10;
           particles[i][j].velocity.y = Math.random()*(-25);
 
-          particles[i][j].c = rgb(Math.floor(Math.random()*255),Math.floor(Math.random()*255),Math.floor(Math.random()*255));
-          particles[i][j].size = Math.floor(Math.random()*15+5); 
+          particles[i][j].r = Math.floor(Math.random()*255);
+          particles[i][j].g = Math.floor(Math.random()*255);
+          particles[i][j].b = Math.floor(Math.random()*255);
+
+          // particles[i][j].c = rgb(Math.floor(Math.random()*255),Math.floor(Math.random()*255),Math.floor(Math.random()*255));
+          particles[i][j].size = Math.floor(Math.random()*10+2); 
 
           particles[i][j].lifetime = Math.floor(Math.random()*75+1);
 
@@ -127,11 +125,11 @@
 
 
     var draw = function() {
-      context.fillStyle = "night";
-      context.fillRect (0, 0, canvas.width, canvas.height); 
+      // context.fillStyle = "night";
+      // context.fillRect (0, 0, canvas.width, canvas.height); 
 
       frameCount = frameCount+1;
-      if(frameCount > 50){
+      // if(frameCount > 50){
         if(N_PARTICLES <= dead_particles){
           init();
         }
@@ -161,7 +159,7 @@
             }
           }
         }
-      }
+      // }
 
 
       requestAnimationFrame(draw);
